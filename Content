@@ -402,9 +402,8 @@ Write-ColoredLine "Step 3 Success: $rate3% ($success3/$total3)" $rateColor3
 Wait-ForEnter -Message "Press Enter for Step 4"
 Clear-Host
 
-# ====== STEP 4: CHEAT DETECTION ======
 # ====== STEP 4: MOUSE & KEYBOARD SOFTWARE CHECK ======
-Write-ColoredLine "Step 4/4: Mouse and Keyboard Software Detection" White
+Write-ColoredLine "Step 4/5: Mouse and Keyboard Software Detection" White
 Write-ColoredLine "Checking for gaming peripheral software..." Cyan
 Show-CustomLoadingBar
 
@@ -465,6 +464,10 @@ $rate4 = if ($total4 -gt 0) { [math]::Round(($success4 / $total4) * 100, 0) } el
 $rateColor4 = if ($rate4 -eq 100) { "Green" } else { "Red" }
 
 Write-ColoredLine "Step 4 Success: $rate4% ($success4/$total4)" $rateColor4
+
+# Pause here to prevent automatic jump to Step 5
+Wait-ForEnter -Message "Press Enter to continue to Step 5"
+Clear-Host
 
 # ====== STEP 5: DOWNLOADS, ACTIVE PROCESSES, REGISTRY SCAN ======
 Clear-Host
