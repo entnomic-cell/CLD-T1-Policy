@@ -78,7 +78,7 @@ Write-Host "                                                   |___/  " -Foregro
 Write-ColoredLine ""
 Write-ColoredLine "=== CLD T1 POLICY ===" Cyan
 Write-ColoredLine "Anti-Cheat Scanner by Entnomic" 'Magenta'
-Write-ColoredLine "For executors: Pass all steps." White
+Write-ColoredLine "Pass all the steps." White
 Write-ColoredLine "Tools saved to C:\ToolsCLD." White
 Write-ColoredLine "Admin required." White
 Write-Host ""
