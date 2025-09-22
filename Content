@@ -1,4 +1,4 @@
-# Check for Administrator privileges
+
 $IsAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 if (-not $IsAdmin) {
@@ -8,7 +8,7 @@ if (-not $IsAdmin) {
     exit 1
 }
 
-# Function to write colored text
+
 function Write-ColoredLine {
     param (
         [string]$Text,
@@ -20,7 +20,7 @@ function Write-ColoredLine {
     $Host.UI.RawUI.ForegroundColor = $oldColor
 }
 
-# Function to wait for Enter key
+
 function Wait-ForEnter {
     param([string]$Message = "Press Enter to Continue")
     Write-ColoredLine $Message 'Yellow'
@@ -29,7 +29,7 @@ function Wait-ForEnter {
     }
 }
 
-# Custom loading bar - Lightweight spinner
+
 function Show-CustomLoadingBar {
     $symbols = @('⠋', '⠙', '⠹', '⠸')
     $i = 0
@@ -42,7 +42,7 @@ function Show-CustomLoadingBar {
     Write-Host "`n"
 }
 
-# File open logging with popup
+
 $logFile = "C:\ToolsCLD\file_log.txt"
 function Start-FileWatcher {
     try {
@@ -67,7 +67,7 @@ function Start-FileWatcher {
     }
 }
 
-# Clear screen and display header
+
 Clear-Host
 Write-Host "  ____ _     ____    _____ _   ____       _ _            " -ForegroundColor Red
 Write-Host " / ___| |   |  _ \  |_   _/ | |  _ \ ___ | (_) ___ _   _ " -ForegroundColor Red
@@ -83,7 +83,7 @@ Write-ColoredLine "Tools saved to C:\ToolsCLD." White
 Write-ColoredLine "Admin required." White
 Write-Host ""
 
-# Check CPU
+
 $cpu = Get-CimInstance Win32_Processor -ErrorAction SilentlyContinue | Select-Object -First 1
 if ($cpu -and $cpu.NumberOfCores -ge 4 -and $cpu.MaxClockSpeed -ge 2500) {
     Write-ColoredLine "CPU: $($cpu.Name)" Green
@@ -94,7 +94,7 @@ if ($cpu -and $cpu.NumberOfCores -ge 4 -and $cpu.MaxClockSpeed -ge 2500) {
 }
 Write-Host ""
 
-# Check GPU
+
 $gpu = Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue | Select-Object -First 1
 $gpuName = $gpu.Name
 $goodGPUs = @("RTX 30", "RTX 40", "RX 6000", "RX 7000")
@@ -114,12 +114,12 @@ Write-Host ""
 Wait-ForEnter -Message "Press Enter to Start"
 Clear-Host
 
-# Start file watcher
+
 New-Item -ItemType Directory -Path "C:\ToolsCLD" -ErrorAction SilentlyContinue | Out-Null
 Start-FileWatcher
 
-# ====== STEP 1: CORE SYSTEM CHECK ======
-Write-ColoredLine "Step 1/4: System Integrity" White
+
+Write-ColoredLine "Step 1/5: System Integrity" White
 Write-ColoredLine "Checking security..." Cyan
 Show-CustomLoadingBar
 
@@ -203,8 +203,8 @@ Write-ColoredLine "Step 1 Success: $rate1% ($success1/$total1)" $rateColor1
 Wait-ForEnter -Message "Press Enter for Step 2"
 Clear-Host
 
-# ====== STEP 2: BAM and Prefetch CHECK ======
-Write-ColoredLine "Step 2/4: BAM and Prefetch" White
+
+Write-ColoredLine "Step 2/5: BAM and Prefetch" White
 Write-ColoredLine "Checking BAM entries and Prefetch..." Cyan
 Show-CustomLoadingBar
 
@@ -291,8 +291,8 @@ Write-ColoredLine "Step 2 Success: $rate2% ($success2/$total2)" $rateColor2
 Wait-ForEnter -Message "Press Enter for Step 3"
 Clear-Host
 
-# ====== STEP 3: PROCESS EXPLORER ======
-Write-ColoredLine "Step 3/4: Process Explorer" White
+
+Write-ColoredLine "Step 3/5: Process Explorer" White
 Write-ColoredLine "Launching Process Explorer. Scroll to bottom, then close." Cyan
 Show-CustomLoadingBar
 
@@ -402,7 +402,7 @@ Write-ColoredLine "Step 3 Success: $rate3% ($success3/$total3)" $rateColor3
 Wait-ForEnter -Message "Press Enter for Step 4"
 Clear-Host
 
-# ====== STEP 4: MOUSE & KEYBOARD SOFTWARE CHECK ======
+
 Write-ColoredLine "Step 4/5: Mouse and Keyboard Software Detection" White
 Write-ColoredLine "Checking for gaming peripheral software..." Cyan
 Show-CustomLoadingBar
@@ -423,7 +423,7 @@ $peripherals = @(
     @{Name="EVGA"; Software="C:\Program Files (x86)\EVGA\EVGA Precision X1\PrecisionX1.exe"}
 )
 
-# Detect connected devices
+
 try {
     $usbDevices = Get-PnpDevice -Class "Keyboard","Mouse" | Where-Object { $_.Status -eq "OK" }
     $foundPeripherals = $false
@@ -516,7 +516,7 @@ try {
     $step5Output += "WARNING: Active process check failed."
 }
 
-# --- Check registry (MuiCache example) ---
+
 try {
     $muiPath = "HKCU:\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache"
     $entries = Get-ItemProperty -Path $muiPath -ErrorAction Stop
@@ -531,7 +531,7 @@ try {
     $step5Output += "WARNING: Cannot access MuiCache registry."
 }
 
-# --- Show Process Active History (PAH) Window ---
+
 Start-Job {
     Add-Type -AssemblyName System.Windows.Forms
     Add-Type -AssemblyName System.Drawing
@@ -576,19 +576,19 @@ Start-Job {
     Show-ProcessActiveHistory
 } | Out-Null
 
-# --- Finalize results ---
+
 if (-not $step5Output) { $step5Output += "SUCCESS: No suspicious files, processes, or registry entries detected." }
 
 Write-Section "Step 5: Downloads, Processes, Registry Scan" $step5Output
 Wait-ForEnter -Message "Press Enter to finish the scan (PAH window must stay open!)"
 
 
-# Overall Success
+
 $overallSuccess = [math]::Round((($success1 + $success2 + $success3 + $success4) / ($total1 + $total2 + $total3 + $total4)) * 100, 0)
 $overallColor = if ($overallSuccess -eq 100) { "Green" } else { "Red" }
 Write-ColoredLine "OVERALL SUCCESS: $overallSuccess%" $overallColor
 
-# Cleanup file watcher
+
 Unregister-Event -SourceIdentifier FileCreated -ErrorAction SilentlyContinue
 Unregister-Event -SourceIdentifier FileChanged -ErrorAction SilentlyContinue
 
